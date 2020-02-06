@@ -26,7 +26,7 @@ const (
 
 	defaultServer       = ":8080"
 	defaultTimeout      = time.Second * 20
-	defaultWait         = time.Second * 3
+	defaultWait         = time.Second * 1
 	defaultMode         = modeRepeatN
 	defaultAPI          = routeguide.APIGetFeature
 	defaultN            = 10

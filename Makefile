@@ -35,9 +35,11 @@ deploy:
 	kubectl apply -f k8s-client.yaml
 
 mesh:
-	linkerd inject --tls=optional k8s-server.yaml | kubectl apply -f -
+	# linkerd inject --tls=optional k8s-server.yaml | kubectl apply -f -
+	linkerd inject k8s-server.yaml | kubectl apply -f -
 	sleep 15s
-	linkerd inject --tls=optional k8s-client.yaml | kubectl apply -f -
+	# linkerd inject --tls=optional k8s-client.yaml | kubectl apply -f -
+	linkerd inject k8s-client.yaml | kubectl apply -f -
 
 image:
 	@eval $$(minikube docker-env) ; \

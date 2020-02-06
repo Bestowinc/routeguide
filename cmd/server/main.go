@@ -20,7 +20,7 @@ import (
 
 const (
 	defaultPort     = 8080
-	faultPercent    = 0.3
+	faultPercent    = 0.1  // 0.3
 	pathHealthCheck = "/grpc.health.v1.Health/Check"
 )
 
@@ -82,7 +82,7 @@ func main() {
 
 func triggerFaultUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	percent := int(faultPercent * 100)
-	if n := rand.Intn(100); info.FullMethod != pathHealthCheck && n > 0 && n <= percent {
+	if n := rand.Intn(100); false && info.FullMethod != pathHealthCheck && n > 0 && n <= percent {
 		err := routeguide.GetFault(info.FullMethod)
 		log.Printf("[interceptor] (fault) %+v\n", err)
 		return nil, err
@@ -93,7 +93,7 @@ func triggerFaultUnaryInterceptor(ctx context.Context, req interface{}, info *gr
 
 func triggerFaultStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	percent := int(faultPercent * 100)
-	if n := rand.Intn(100); info.FullMethod != pathHealthCheck && n > 0 && n <= percent {
+	if n := rand.Intn(100); false && info.FullMethod != pathHealthCheck && n > 0 && n <= percent {
 		err := routeguide.GetFault(info.FullMethod)
 		log.Printf("[interceptor] (fault) %+v\n", err)
 		return err
