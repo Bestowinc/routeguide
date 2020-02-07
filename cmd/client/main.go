@@ -26,7 +26,8 @@ const (
 
 	defaultServer       = ":8080"
 	defaultTimeout      = time.Second * 20
-	defaultWait         = time.Second * 1
+	defaultWaitDuration = time.Millisecond * 1
+	defaultWait         = 1000 // default wait of 1 sec 1000 milliseconds
 	defaultMode         = modeRepeatN
 	defaultAPI          = routeguide.APIGetFeature
 	defaultN            = 10
@@ -44,6 +45,9 @@ func main() {
 		enableLB  = flag.Bool("enable-load-balancing", false, "Set to true to enable client-side load balancing")
 		serverIPs = flag.String("server-ipv4", defaultServerAddr, "If load balancing is enabled, this is a list of comma-separated server addresses used by the GRPC name resolver")
 		resolver  = flag.String("resolver", defaultResolverType, "The resolver to use. Supported values: dns manual")
+		waitTime  = flag.Int("wait", defaultWait, "wait time in millisecs between requests")
+
+		waitDuration = time.Millisecond * time.Duration(*waitTime) // waitTime is in milliseconds convert that to seconds
 
 		opts = []grpc.DialOption{grpc.WithInsecure()}
 	)
@@ -85,20 +89,20 @@ func main() {
 	log.Printf("[main] running in %s mode", *mode)
 	switch strings.ToLower(*mode) {
 	case modeFirehose:
-		if err := firehose(ctx, client, *timeout); err != nil && err != context.Canceled {
+		if err := firehose(ctx, client, *timeout, waitDuration); err != nil && err != context.Canceled {
 			log.Fatalf("[main] %s", err)
 		}
 	case modeRepeatN:
-		if err := repeatN(ctx, client, *timeout, *api, *n); err != nil && err != context.Canceled {
+		if err := repeatN(ctx, client, *timeout, *api, *n, waitDuration); err != nil && err != context.Canceled {
 			log.Fatalf("[main] %s", err)
 		}
 	default:
-		log.Fatalf("[main] unknown mode %s", mode)
+		log.Fatalf("[main] unknown mode %s", *mode)
 	}
 	log.Println("[main] finished")
 }
 
-func firehose(ctx context.Context, client routeguide.Client, timeout time.Duration) error {
+func firehose(ctx context.Context, client routeguide.Client, timeout time.Duration, wait time.Duration) error {
 	for {
 		select {
 		case <-ctx.Done():
@@ -139,12 +143,12 @@ func firehose(ctx context.Context, client routeguide.Client, timeout time.Durati
 				}
 			}
 
-			time.Sleep(defaultWait)
+			time.Sleep(wait)
 		}
 	}
 }
 
-func repeatN(ctx context.Context, client routeguide.Client, timeout time.Duration, api string, n int) error {
+func repeatN(ctx context.Context, client routeguide.Client, timeout time.Duration, api string, n int, wait time.Duration) error {
 	var call func(ctx context.Context) error
 
 	switch strings.ToLower(api) {
@@ -172,7 +176,7 @@ func repeatN(ctx context.Context, client routeguide.Client, timeout time.Duratio
 			log.Println(err)
 		}
 
-		time.Sleep(defaultWait)
+		time.Sleep(wait)
 	}
 
 	return nil

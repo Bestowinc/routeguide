@@ -20,13 +20,15 @@ import (
 
 const (
 	defaultPort     = 8080
-	faultPercent    = 0.1  // 0.3
+	faultPercent    = 0.3
 	pathHealthCheck = "/grpc.health.v1.Health/Check"
 )
 
 func main() {
 	port := flag.Int("port", defaultPort, "Default port to listen on")
 	help := flag.Bool("help", false, "Print usage")
+	// faults := flag.Bool("faults", false, "enable server faults")
+
 	flag.Parse()
 
 	if *help {
@@ -43,10 +45,10 @@ func main() {
 	}
 	log.Printf("[main] fault percentage: %.1f%%\n", faultPercent*100)
 
-	opts := []grpc.ServerOption{
-		grpc.UnaryInterceptor(triggerFaultUnaryInterceptor),
-		grpc.StreamInterceptor(triggerFaultStreamInterceptor),
-	}
+	//opts := []grpc.ServerOption{
+	//	grpc.UnaryInterceptor(triggerFaultUnaryInterceptor),
+	//	grpc.StreamInterceptor(triggerFaultStreamInterceptor),
+	//}
 
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -55,7 +57,8 @@ func main() {
 	hostname = fmt.Sprintf("%s:%d", hostname, *port)
 	log.Printf("[main] hostname: %s", hostname)
 
-	grpcServer := grpc.NewServer(opts...)
+	// grpcServer := grpc.NewServer(opts...)
+	grpcServer := grpc.NewServer()
 	routeGuideServer, err := routeguide.NewServer(hostname)
 	if err != nil {
 		log.Fatalf("[main] fail to listen for tcp traffic at %s", hostname)

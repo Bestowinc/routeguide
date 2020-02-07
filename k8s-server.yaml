@@ -34,8 +34,8 @@ spec:
     spec:
       containers:
       - name: rg-server
-        image: gcr.io/runconduit/routeguide
-        imagePullPolicy: Always
+        image: routeguide
+        imagePullPolicy: Never
         envFrom:
         - configMapRef:
             name: rg-server-config

@@ -10,8 +10,8 @@ spec:
   restartPolicy: OnFailure
   containers:
   - name: rg-client
-    image: gcr.io/runconduit/routeguide
-    imagePullPolicy: Always
+    image: routeguide
+    imagePullPolicy: Never
     envFrom:
     - configMapRef:
         name: rg-client-config
@@ -19,8 +19,7 @@ spec:
     - /bin/bash
     - "-c"
     - |
-      /rg-client -server=${SERVER_HOST}:${SERVER_PORT} -timeout=${GRPC_TIMEOUT} -mode=${MODE} -n=${MAX_REPEAT} -api=${REMOTE_API} -n=${MAX_REPEAT} -enable-load-balancing=${ENABLE_LOAD_BALANCING} -resolver=${RESOLVER_TYPE}
-
+      /rg-client -server=${SERVER_HOST}:${SERVER_PORT} -timeout=${GRPC_TIMEOUT} -mode=${MODE} -n=${MAX_REPEAT} -api=${REMOTE_API} -n=${MAX_REPEAT} -enable-load-balancing=${ENABLE_LOAD_BALANCING} -resolver=${RESOLVER_TYPE} -wait=${WAIT_TIME}
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -37,3 +36,4 @@ data:
   REMOTE_API: RouteChat
   ENABLE_LOAD_BALANCING: "false"
   RESOLVER_TYPE: dns
+  WAIT_TIME: "250"
