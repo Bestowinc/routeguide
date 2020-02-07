@@ -1,3 +1,15 @@
+
+Example links
+* https://itnext.io/on-grpc-load-balancing-683257c5b7b3
+* https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/
+* https://linkerd.io/2/getting-started/
+
+Current issues:
+* linkerd adds it self to all deployments via a webhook, we need to exclude linkerd from every namespace we dont want it, as by default it will add to all
+* Modify the namespaces of the other applications to not apply the linkerd attribute to auto-apply
+
+
+
 # routeguide
 This repository contains a gRPC programming exercise which is based on the [basic tutorial](https://grpc.io/docs/tutorials/basic/go.html) found in the official gRPC documentation.
 
